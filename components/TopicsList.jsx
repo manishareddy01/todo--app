@@ -16,24 +16,34 @@ const getTopics = async()=>{
     }
 }
 export default async function TopicsList(){
+    try {
+        const { topics } = await getTopics();
+        
+        if (!topics) {
+            return <div>No topics available</div>;
+        }
 
-    const {topics} = await getTopics();
-    return (
-        <>
-        {topics.map((t)=>(
-        <div key={t._id} className='p-4 border-slate-300 my-3 flex justify-between gap-5 items-start'>
-            <div>
-                <h2 className='font-bold text-2xl'>{t.title}</h2>
-                <div>{t.description}</div>
+        return (
+            <>
+            {topics.map((t)=>(
+            <div key={t._id} className='p-4 border-slate-300 my-3 flex justify-between gap-5 items-start'>
+                <div>
+                    <h2 className='font-bold text-2xl'>{t.title}</h2>
+                    <div>{t.description}</div>
+                </div>
+                <div className='flex gap-2'>
+                    <RemoveBtn id={t._id}/>
+                    <Link href={`/editTopic/${t._id}`}>
+                        <HiPencilAlt size={24}/>
+                    </Link> 
+                </div>
             </div>
-            <div className='flex gap-2'>
-                <RemoveBtn id={t._id}/>
-                <Link href={`/editTopic/${t._id}`}>
-                    <HiPencilAlt size={24}/>
-                </Link> 
-            </div>
-        </div>
-        ))}
-        </>
-    )
+            ))}
+            </>
+        )
+    }
+    catch (error) {
+        console.error('Error fetching topics:', error);
+        return <div>Error fetching topics</div>;
+    }
 }
