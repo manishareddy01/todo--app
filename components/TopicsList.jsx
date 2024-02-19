@@ -1,27 +1,29 @@
 import { HiPencilAlt } from 'react-icons/hi';
 import RemoveBtn from './RemoveBtn';
 import Link from 'next/link';
-const getTopics = async()=>{
+export async function getServerSideProps() {
     try {
-        const res = await fetch("http://localhost:3000/api/topics",{
+        const res = await fetch("http://localhost:3000/api/topics", {
             cache: "no-store",
         });
-        if(!res.ok){
+        
+        if (!res.ok) {
             throw new Error("Failed to fetch topics");
         }
-        return res.json();
-    } catch (error) {
-        console.log("Error")
+
+        const topics = await res.json();
         
+        return {
+            props: { topics },
+        };
+    } catch (error) {
+        console.error("Error fetching topics:", error);
+        return {
+            props: { topics: [] }, // Return an empty array of topics in case of error
+        };
     }
 }
-export default async function TopicsList(){
-    try {
-        const { topics } = await getTopics();
-        
-        if (!topics) {
-            return <div>No topics available</div>;
-        }
+export default function TopicsList(topics){
 
         return (
             <>
@@ -41,9 +43,5 @@ export default async function TopicsList(){
             ))}
             </>
         )
-    }
-    catch (error) {
-        console.error('Error fetching topics:', error);
-        return <div>Error fetching topics</div>;
-    }
+    
 }
